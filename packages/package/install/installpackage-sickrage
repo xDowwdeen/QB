@@ -22,37 +22,37 @@ OUTTO=/srv/rutorrent/home/db/output.log
 local_setup=/etc/QuickBox/setup/
 
 function _installSickRage1() {
-  sudo git clone https://git.sickrage.ca/SiCKRAGE/sickrage.git  /home/"${MASTER}"/.sickrage >/dev/null 2>&1
+  sudo git clone https://github.com/SickChill/SickChill.git  /home/"${MASTER}"/.sickchill >/dev/null 2>&1
 }
-function _installSickRage2() {
-  touch /install/.sickrage.lock
-  chown "${MASTER}":"${MASTER}" -R /home/"${MASTER}"/.sickrage
-  cd /home/"${MASTER}"/.sickrage
-  pip install -r requirements.txt > /dev/null 2>&1
-}
+#function _installSickRage2() {
+#  touch /install/.sickrage.lock
+#  chown "${MASTER}":"${MASTER}" -R /home/"${MASTER}"/.sickrage
+#  cd /home/"${MASTER}"/.sickrage
+#  pip install -r requirements.txt > /dev/null 2>&1
+#}
 function _installSickRage3() {
-  cp ${local_setup}templates/sysd/sickrage.template /etc/systemd/system/sickrage@.service
-  systemctl enable sickrage@${MASTER} > /dev/null 2>&1
-  systemctl start sickrage@${MASTER} > /dev/null 2>&1
+  cp ${local_setup}templates/sysd/sickchill.template /etc/systemd/system/sickchill@.service
+  systemctl enable sickchill@${MASTER} > /dev/null 2>&1
+  systemctl start sickchill@${MASTER} > /dev/null 2>&1
   sleep 10
-  systemctl stop sickrage@${MASTER} > /dev/null 2>&1
+  systemctl stop sickchill@${MASTER} > /dev/null 2>&1
   sleep 10
 
-  sed -i "s/web_root.*/web_root = \"sickrage\"/g" /home/"${MASTER}"/.sickrage/config.ini
-  sed -i "s/web_host.*/web_host = 0.0.0.0/g" /home/"${MASTER}"/.sickrage/config.ini
+  sed -i "s/web_root.*/web_root = \"sickchill\"/g" /home/"${MASTER}"/.sickchill/config.ini
+  sed -i "s/web_host.*/web_host = 0.0.0.0/g" /home/"${MASTER}"/.sickchill/config.ini
   cat > /etc/apache2/sites-enabled/sickrage.conf <<EOF
 <Location /sickrage>
-  ProxyPass http://localhost:8081/sickrage
-  ProxyPassReverse http://localhost:8081/sickrage
+  ProxyPass http://localhost:8081/sickchill
+  ProxyPassReverse http://localhost:8081/sickchill
   AuthType Digest
   AuthName "rutorrent"
   AuthUserFile '/etc/htpasswd'
   Require user ${MASTER}
 </Location>
 EOF
-  chown www-data: /etc/apache2/sites-enabled/sickrage.conf
+  chown www-data: /etc/apache2/sites-enabled/sickchill.conf
   service apache2 reload
-  systemctl start sickrage@${MASTER} > /dev/null 2>&1
+  systemctl start sickchill@${MASTER} > /dev/null 2>&1
 
 }
 
